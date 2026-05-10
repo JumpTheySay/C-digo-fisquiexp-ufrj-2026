@@ -1,0 +1,42 @@
+import ternary
+import matplotlib.pyplot as plt
+
+
+pontos = [
+    (6.76, 52.40, 40.84),
+    (12.64, 53.43, 33.93),
+    (17.79, 54.34, 27.87),
+    (24.27, 51.30, 24.43),
+    (31.18, 47.89, 20.93),
+    (38.14, 44.80, 17.06),
+    (45.59, 41.30, 13.11),
+    (54.69, 36.13, 9.18)
+]
+
+scale = 100
+fig, tax = ternary.figure(scale=scale)
+
+# 1. Linhas de Titulação (Base -> Topo)
+topo = (0, 100, 0)
+for p in pontos:
+ 
+    # Manter a proporção entre os outros dois componentes
+    soma_extremos = p[0] + p[2]
+    p_base = (p[0] * 100 / soma_extremos, 0, p[2] * 100 / soma_extremos)
+    tax.line(p_base, topo, linewidth=0.5, color='gray', linestyle="--")
+
+# 2. Curva Binodal
+tax.plot(pontos, linewidth=2, color='red', marker='o', label="Curva Binodal")
+
+# 3. Rótulos dos Vértices 
+tax.top_corner_label("Ácido Acético", offset=0.2)
+tax.left_corner_label("H₂O", offset=0.2)
+tax.right_corner_label("CHCl₃", offset=0.2)
+
+# Configurações de exibição
+tax.boundary(linewidth=1.0)
+tax.ticks(axis='lbr', multiple=10, linewidth=1)
+tax.get_axes().axis('off')
+tax.clear_matplotlib_ticks()
+
+plt.show()
