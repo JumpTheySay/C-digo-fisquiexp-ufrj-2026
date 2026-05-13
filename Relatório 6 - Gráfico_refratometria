@@ -1,0 +1,59 @@
+# Aqui importamos as bibliotecas que vão nos auxiliar
+  durante a execução do código
+
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.metrics import r2_score
+
+# 1. ENTRADA DE DADOS 
+# Aqui ficam os valores obtidos experimentalmente.
+# concentracao: Unidade em g/ml
+# angulo: Ângulo de rotação observado no polarímetro
+concentracao = np.array([0.000, 0.025, 0.050, 0.100, 0.150, 0.200])
+angulo = np.array([0.00, 3.45, 6.70, 13.85, 20.20, 27.35])
+
+# 2. CÁLCULO DA REGRESSÃO LINEAR 
+# np.polyfit realiza o ajuste de mínimos quadrados. 
+# O número '1' indica que queremos uma reta (polinômio de 1º grau).
+# a = inclinação (coeficiente angular); b = intercepto (coeficiente linear).
+a, b = np.polyfit(concentracao, angulo, 1)
+
+# Gera os valores previstos pela reta para o cálculo de precisão e plotagem
+y_pred = a * concentracao + b
+
+# 3. VALIDAÇÃO ESTATÍSTICA 
+# O R² indica quão bem a reta se ajusta aos dados reais (quanto mais próximo de 1, melhor).
+r_quadrado = r2_score(angulo, y_pred)
+
+# 4. CONFIGURAÇÃO DO GRÁFICO 
+plt.figure(figsize=(9, 5))
+
+# Plotagem dos pontos experimentais (Scatter) 
+plt.scatter(concentracao, angulo, color='darkred', s=80, label='Dados do Lab')
+
+# Plotagem da reta de ajuste (Linha)
+# A legenda (label) já exibe a equação da reta formatada com 2 casas decimais.
+plt.plot(concentracao, y_pred, color='navy', label=f'Reta: α = {a:.2f}C + {b:.2f}')
+
+# Customização visual do gráfico
+plt.title('Gráfico de Calibração - Polarimetria da Sacarose', fontsize=14)
+plt.xlabel('Concentração (g/ml)', fontsize=11)
+plt.ylabel('Ângulo de Rotação α (°)', fontsize=11)
+
+# Adiciona o valor de R² dentro de uma caixa de texto no gráfico
+plt.text(0.01, 24, f'$R^2 = {r_quadrado:.4f}$', fontsize=12, bbox=dict(facecolor='white', alpha=0.5))
+
+plt.legend()
+plt.grid(True, alpha=0.3) # Grade leve para facilitar a leitura dos eixos
+
+# 5. SAÍDA DE RESULTADOS NO CONSOLE 
+print(f"--- Resultados da Calibração ---")
+print(f"Equação: α = {a:.4f} * C + {b:.4f}")
+print(f"R² (Precisão): {r_quadrado:.4f}")
+
+# Cálculo do Poder Rotatório Específico [α]
+# A fórmula considera o comprimento do tubo (L) usado no experimento.
+# Se L for diferente de 2dm, altere o divisor abaixo.
+print(f"Poder Rotatório [α] Experimental: {a/2:.2f}° (para L=2dm)")
+
+plt.show()
