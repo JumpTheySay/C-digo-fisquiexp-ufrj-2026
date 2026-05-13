@@ -1,6 +1,6 @@
 # C-digo-fisquiexp-ufrj-2026
 Meu legado para a disciplina de Fisico - Química Experimental
-# Tratamento de Dados - [Nome do Experimento de FisQuiExp]
+# Tratamento de Dados dos relatórios de FisQuiExp da Escola de Química
 
 Este repositório contém o script em Python desenvolvido para o processamento de dados, automação de cálculos e geração de gráficos dos experimentos da disciplina de Físico-Química Experimental ([Sigla da Universidade]).
 
