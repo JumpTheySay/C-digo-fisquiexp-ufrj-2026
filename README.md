@@ -2,7 +2,7 @@
 Meu legado para a disciplina de Fisico - Química Experimental
 # Tratamento de Dados dos relatórios de FisQuiExp da Escola de Química
 
-Este repositório contém o script em Python desenvolvido para o processamento de dados, automação de cálculos e geração de gráficos dos experimentos da disciplina de Físico-Química Experimental ([Sigla da Universidade]).
+Este repositório contém o script em Python desenvolvido para o processamento de dados, automação de cálculos e geração de gráficos dos experimentos da disciplina de Físico-Química Experimental.
 
 O objetivo deste projeto é deixar um **legado técnico** para as próximas turmas, facilitando a reprodutibilidade dos cálculos e incentivando o uso de ferramentas de programação na análise físico-química.
 
