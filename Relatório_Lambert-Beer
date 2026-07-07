@@ -1,0 +1,80 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import CubicSpline
+
+# GRÁFICO 1: ESPECTRO DE ABSORÇÃO (0,004 M)
+
+wl = np.array([440, 460, 480, 500, 520, 540, 560, 570, 580, 590, 600, 620, 640])
+A_espectro = np.array([0.180, 0.114, 0.065, 0.070, 0.106, 0.154, 0.192, 0.207, 0.214, 0.209, 0.197, 0.155, 0.114])
+
+# Determinação do comprimento de onda ótimo (pico de absorção)
+idx_max = np.argmax(A_espectro)
+lambda_max = wl[idx_max]
+A_max = A_espectro[idx_max]
+
+# Interpolação cúbica para curva suave
+wl_smooth = np.linspace(430, 650, 500)
+cs = CubicSpline(wl, A_espectro, bc_type='natural')
+A_smooth = cs(wl_smooth)
+
+# Plotagem do Gráfico 1
+plt.figure(figsize=(10, 6))
+plt.plot(wl_smooth, A_smooth, 'b-', linewidth=2.5, label='Curva de absorção (interpolação cúbica)')
+plt.scatter(wl, A_espectro, color='red', s=80, zorder=5, label='Dados experimentais')
+plt.scatter(lambda_max, A_max, color='green', s=200, zorder=6, marker='D', edgecolors='black',
+            label=f'Comprimento de onda ótimo: {lambda_max} nm (A = {A_max:.3f})')
+plt.xlabel('Comprimento de onda (nm)', fontsize=12)
+plt.ylabel('Absorbância (A)', fontsize=12)
+plt.title('Espectro de absorção do sulfato de cromo (solução 0,004 M)', fontsize=14)
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.legend(loc='best')
+plt.xlim(430, 650)
+plt.ylim(0, 0.25)
+plt.tight_layout()
+plt.savefig('espectro_absorcao_cromo.png', dpi=300)
+plt.show()
+
+print(f"===== RESULTADO GRÁFICO 1 =====")
+print(f"Comprimento de onda ótimo (λ_máx): {lambda_max} nm")
+print(f"Absorbância máxima: {A_max:.3f}")
+
+
+# GRÁFICO 2: VERIFICAÇÃO DA LEI DE LAMBERT-BEER
+
+concentracoes = np.array([0.001, 0.002, 0.004, 0.006, 0.008, 0.010])
+A_leibeer = np.array([0.059, 0.124, 0.208, 0.311, 0.417, 0.518])
+
+# Regressão linear (A = m*c + b)
+coeffs = np.polyfit(concentracoes, A_leibeer, 1)
+m, b = coeffs
+R2 = np.corrcoef(concentracoes, A_leibeer)[0, 1]**2
+
+# Caminho óptico da cubeta retangular = 1,0 cm
+x = 1.0  # cm
+absortividade_molar = m / x  # A = a * c * x  =>  a = m / x
+
+# Pontos para a reta ajustada
+c_smooth = np.linspace(0, 0.012, 100)
+A_fit = m * c_smooth + b
+
+# Plotagem do Gráfico 2
+plt.figure(figsize=(10, 6))
+plt.scatter(concentracoes, A_leibeer, color='red', s=80, zorder=5, label='Dados experimentais')
+plt.plot(c_smooth, A_fit, 'b-', linewidth=2.5,
+         label=f'Ajuste linear: A = {m:.4f}·c + {b:.4f} (R² = {R2:.5f})')
+plt.xlabel('Concentração (mol L⁻¹)', fontsize=12)
+plt.ylabel('Absorbância (A)', fontsize=12)
+plt.title(f'Verificação da Lei de Lambert-Beer (λ = {lambda_max} nm)', fontsize=14)
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.legend(loc='best')
+plt.xlim(0, 0.012)
+plt.ylim(0, 0.55)
+plt.tight_layout()
+plt.savefig('lei_beer_cromo.png', dpi=300)
+plt.show()
+
+print(f"\n===== RESULTADOS GRÁFICO 2 =====")
+print(f"Equação da reta: A = {m:.4f}·c + {b:.4f}")
+print(f"Coeficiente de correlação (R²): {R2:.5f}")
+print(f"Absortividade molar (a): {absortividade_molar:.2f} L mol⁻¹ cm⁻¹")
+print(f"Unidade: L·mol⁻¹·cm⁻¹ (pois x = {x:.1f} cm)")
