@@ -1,0 +1,51 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import minimize_scalar
+
+# Dados experimentais (inseridos manualmente ou via pandas)
+x = np.array([5.64, 5.10, 4.65, 4.27, 3.68, 3.23, 2.88, 2.36, 1.86, 1.45, 1.09, 0.90])  # % p/p fenol
+T = np.array([46, 52, 56, 61, 64, 65, 67, 65, 64, 62, 59, 58])  # °C
+
+# Ajuste polinomial de grau 4 (curva binodal suave)
+coeffs = np.polyfit(x, T, 4)
+poly_func = np.poly1d(coeffs)
+
+# Geração de pontos para a curva suave
+x_smooth = np.linspace(min(x)-0.1, max(x)+0.1, 200)
+T_smooth = poly_func(x_smooth)
+
+# Determinação do máximo da curva (Temperatura Consoluta Superior - CST)
+# A curva tem um máximo, então minimizamos o negativo da função
+def negative_poly(x_val):
+    return -poly_func(x_val)
+
+result = minimize_scalar(negative_poly, bounds=(min(x), max(x)), method='bounded')
+x_crit = result.x
+T_crit = poly_func(x_crit)
+
+print(f"=== RESULTADOS DO AJUSTE ===")
+print(f"Temperatura Consoluta Superior (CST) experimental: {T_crit:.2f} °C")
+print(f"Composição crítica experimental (ramo diluído): {x_crit:.2f} % p/p de fenol")
+print(f"Coeficientes do polinômio: {coeffs}")
+
+# --- GRÁFICO ---
+plt.figure(figsize=(10, 6))
+plt.scatter(x, T, color='orange', s=80, zorder=5, label='Dados experimentais')
+plt.plot(x_smooth, T_smooth, 'b-', linewidth=2.5, label='Ajuste polinomial (grau 4)')
+plt.scatter(x_crit, T_crit, color='green', s=150, zorder=6,
+            marker='D', edgecolors='black',
+            label=f'CST calculada ({T_crit:.1f} °C, {x_crit:.2f} % p/p)')
+
+# Configurações do gráfico
+plt.xlabel('Composição (% p/p de fenol)', fontsize=12)
+plt.ylabel('Temperatura de homogeneização (°C)', fontsize=12)
+plt.title('Diagrama de Equilíbrio Líquido-Líquido: Água-Fenol', fontsize=14)
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.legend(loc='best')
+plt.xlim(0, 6.5)
+plt.ylim(40, 72)
+plt.tight_layout()
+
+# Salvar a imagem em alta resolução
+plt.savefig('diagrama_agua_fenol.png', dpi=300)
+plt.show()
